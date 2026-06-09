@@ -1,0 +1,6 @@
+{
+  "name": "TrendClarity",
+  "description": "Discovery Studio: A premium corporate portal for emerging design patterns, typography, biotechnology, and brand innovations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
