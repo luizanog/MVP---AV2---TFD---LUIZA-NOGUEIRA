@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { X, Sparkles, Image, Check } from 'lucide-react';
 import { TrendCardType } from '../types';
-import { supabase } from '../supabase';
 
 interface NewTrendModalProps {
   onClose: () => void;
@@ -24,7 +23,7 @@ const PRESET_IMAGES = [
   {
     name: 'Liquid Abstract',
     url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
-  }
+  },
 ];
 
 export default function NewTrendModal({ onClose, onSave }: NewTrendModalProps) {
@@ -37,7 +36,7 @@ export default function NewTrendModal({ onClose, onSave }: NewTrendModalProps) {
   const [customUrl, setCustomUrl] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title.trim() || !description.trim()) {
       setErrorMsg('Please specify a title and descriptive details.');
@@ -46,50 +45,32 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     const finalImage = customUrl.trim() ? customUrl.trim() : imageUrl;
 
- const newCard: TrendCardType = {
-  id: `custom-${Date.now()}`,
-  title: title.trim(),
-  category,
-  badge,
-  badgeType,
-  image: finalImage,
-  description: description.trim(),
-  timeText: 'Just Published',
-  isBookmarked: false,
-  isCustom: true,
-};
-
-const { error } = await supabase
-  .from('trends')
-  .insert([
-    {
+    const newCard: TrendCardType = {
+      id: crypto.randomUUID(),
       title: title.trim(),
       category,
+      badge,
+      badgeType,
+      image: finalImage,
       description: description.trim(),
-      ai_summary: badge,
-    },
-  ]);
+      timeText: 'Just Published',
+      isBookmarked: false,
+      isCustom: true,
+    };
 
-console.log('Erro Supabase:', error);
+    onSave(newCard);
+    onClose();
+  };
 
-if (error) {
-  setErrorMsg('Erro ao salvar no banco.');
-  return;
-}
-
-onSave(newCard);
-onClose();
-  
   const handleBadgeChange = (selectedBadge: string) => {
     setBadge(selectedBadge);
-    // Auto-map type values
     const mapping: Record<string, string> = {
-      'Aesthetic': 'aesthetic',
-      'Tech': 'tech',
-      'Motion': 'motion',
-      'Strategy': 'strategy',
-      'Palette': 'palette',
-      'Data': 'data',
+      Aesthetic: 'aesthetic',
+      Tech: 'tech',
+      Motion: 'motion',
+      Strategy: 'strategy',
+      Palette: 'palette',
+      Data: 'data',
     };
     setBadgeType(mapping[selectedBadge] || 'aesthetic');
   };
@@ -123,7 +104,9 @@ onClose();
 
           {/* Title */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-widest text-[#767586] ml-1">Trend Concept Title</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-[#767586] ml-1">
+              Trend Concept Title
+            </label>
             <input
               type="text"
               required
@@ -137,7 +120,9 @@ onClose();
           <div className="grid grid-cols-2 gap-4">
             {/* Category selection */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-[#767586] ml-1">Macro Category</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-[#767586] ml-1">
+                Macro Category
+              </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -152,7 +137,9 @@ onClose();
 
             {/* Impact indicator badge */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-[#767586] ml-1">Design Vibe</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-[#767586] ml-1">
+                Design Vibe
+              </label>
               <select
                 value={badge}
                 onChange={(e) => handleBadgeChange(e.target.value)}
@@ -170,7 +157,9 @@ onClose();
 
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-widest text-[#767586] ml-1">Trend Manifest Description</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-[#767586] ml-1">
+              Trend Manifest Description
+            </label>
             <textarea
               required
               rows={3}
@@ -187,7 +176,7 @@ onClose();
               <Image className="w-3.5 h-3.5" />
               Trend Artwork Visual Selection
             </label>
-            
+
             {/* Presets */}
             <div className="grid grid-cols-4 gap-2">
               {PRESET_IMAGES.map((img) => (
@@ -206,7 +195,9 @@ onClose();
                 >
                   <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/30 flex items-end p-1">
-                    <span className="text-[9px] font-semibold text-white truncate w-full text-center">{img.name}</span>
+                    <span className="text-[9px] font-semibold text-white truncate w-full text-center">
+                      {img.name}
+                    </span>
                   </div>
                   {imageUrl === img.url && !customUrl && (
                     <div className="absolute top-1 right-1 bg-[#2c2abc] text-white p-0.5 rounded-full">
@@ -224,14 +215,19 @@ onClose();
                   type="url"
                   placeholder="Or key custom Unsplash image URL..."
                   value={customUrl}
-                  onChange={(e) => {
-                    setCustomUrl(e.target.value);
-                  }}
+                  onChange={(e) => setCustomUrl(e.target.value)}
                   className="flex-1 h-10 px-3 bg-[#f5f2fe] border-none rounded-lg focus:ring-2 focus:ring-[#2c2abc] transition-all text-xs focus:outline-none"
                 />
                 {customUrl.trim() && (
                   <div className="w-10 h-10 border border-[#c6c5d7]/30 bg-[#fcf8ff] rounded-lg overflow-hidden flex items-center justify-center">
-                    <img src={customUrl} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }} />
+                    <img
+                      src={customUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
                   </div>
                 )}
               </div>
