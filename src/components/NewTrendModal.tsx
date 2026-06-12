@@ -46,20 +46,20 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     const finalImage = customUrl.trim() ? customUrl.trim() : imageUrl;
 
-    const newCard: TrendCardType = {
-      id: `custom-${Date.now()}`,
-      title: title.trim(),
-      category,
-      badge,
-      badgeType,
-      image: finalImage,
-      description: description.trim(),
-      timeText: 'Just Published',
-      isBookmarked: false,
-      isCustom: true,
-    };
+ const newCard: TrendCardType = {
+  id: `custom-${Date.now()}`,
+  title: title.trim(),
+  category,
+  badge,
+  badgeType,
+  image: finalImage,
+  description: description.trim(),
+  timeText: 'Just Published',
+  isBookmarked: false,
+  isCustom: true,
+};
 
-  const { error } = await supabase
+const { error } = await supabase
   .from('trends')
   .insert([
     {
@@ -70,15 +70,16 @@ const handleSubmit = async (e: React.FormEvent) => {
     },
   ]);
 
+console.log('Erro Supabase:', error);
+
 if (error) {
-  console.error(error);
   setErrorMsg('Erro ao salvar no banco.');
   return;
 }
-    onSave(newCard);
-    onClose();
-  };
 
+onSave(newCard);
+onClose();
+  
   const handleBadgeChange = (selectedBadge: string) => {
     setBadge(selectedBadge);
     // Auto-map type values
