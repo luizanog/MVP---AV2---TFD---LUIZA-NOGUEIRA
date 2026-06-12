@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Sparkles, Image, Check } from 'lucide-react';
 import { TrendCardType } from '../types';
+import { supabase } from '../supabase';
 
 interface NewTrendModalProps {
   onClose: () => void;
@@ -36,7 +37,7 @@ export default function NewTrendModal({ onClose, onSave }: NewTrendModalProps) {
   const [customUrl, setCustomUrl] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !description.trim()) {
       setErrorMsg('Please specify a title and descriptive details.');
@@ -58,6 +59,22 @@ export default function NewTrendModal({ onClose, onSave }: NewTrendModalProps) {
       isCustom: true,
     };
 
+  const { error } = await supabase
+  .from('trends')
+  .insert([
+    {
+      title: title.trim(),
+      category,
+      description: description.trim(),
+      ai_summary: badge,
+    },
+  ]);
+
+if (error) {
+  console.error(error);
+  setErrorMsg('Erro ao salvar no banco.');
+  return;
+}
     onSave(newCard);
     onClose();
   };
